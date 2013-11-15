@@ -1,11 +1,11 @@
 # Dobby's node templates
-The following packer templates create optimized nodes to be lunched with Dobby's formations.
+The following packer templates create optimized node images intended to be lunched with Dobby's formations.
 
 ## Building a box
 First make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then, run the following packer command and sit tight:
 
 ```
-$ packer build ubuntu-12.04/template.json
+$ packer build template.json
 ```
 
 
