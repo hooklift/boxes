@@ -1,0 +1,1 @@
+/usr/bin/coreos-install -d /dev/sda -V beta
