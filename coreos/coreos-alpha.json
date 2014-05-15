@@ -1,31 +1,43 @@
 {
 	"builders": [
 	{
-      "type": "vmware-iso",
-      "boot_command": [
-      	"<wait>",
-      	"/coreos/vmlinuz",
-      	" initrd=/coreos/cpio.gz",
-      	" coreos.autologin",
-      	" rootfstype=btrfs",
-      	" cloud-config-url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/config.yml <enter>"
-      ],
-      "vm_name": "dobby-coreos-beta",
-      "boot_wait": "2s",
-      "disk_size": 20960,
-      "guest_os_type": "linux",
-      "http_directory": "oem",
-      "iso_checksum": "dff1be5a1297478aeba24209ccf257dd",
-      "iso_checksum_type": "md5",
-      "iso_url": "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_iso_image.iso",
-      "ssh_username": "core",
-      "ssh_port": 22,
-      "ssh_wait_timeout": "15s",
-      "shutdown_command": "shutdown -P now",
-      "vmx_data": {
-        "memsize": "512",
-        "numvcpus": "2",
-        "cpuid.coresPerSocket": "1"
-      }
-    }]
+		"vm_name": "dobby-coreos-beta",
+		"type": "vmware-iso",
+		"guest_os_type": "other3xlinux-64",
+		"output_directory": "vmware",
+		"boot_command": [
+			"<wait>",
+			"/coreos/vmlinuz",
+			" initrd=/coreos/cpio.gz",
+			" coreos.autologin",
+			" rootfstype=btrfs",
+			" cloud-config-url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/config.yml <enter>"
+		],
+		"boot_wait": "2s",
+		"disk_size": 20960,
+		"guest_os_type": "linux",
+		"http_directory": "oem",
+		"iso_checksum": "dff1be5a1297478aeba24209ccf257dd",
+		"iso_checksum_type": "md5",
+		"iso_url": "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_iso_image.iso",
+		"ssh_username": "core",
+		"ssh_port": 22,
+		"ssh_wait_timeout": "15s",
+		"shutdown_command": "shutdown -P now",
+		"vmx_data": {
+			"memsize": "1024",
+			"numvcpus": "2",
+			"cpuid.coresPerSocket": "1"
+		}
+    }],
+    
+    "provisioners": [
+    	{
+    		"type": "shell",
+    		"scripts": [
+    			"scripts/install.sh"
+    		]
+    	}
+    ]
 }
+
