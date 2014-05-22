@@ -17,14 +17,14 @@
 		"disk_size": 20960,
 		"guest_os_type": "linux",
 		"http_directory": "oem",
-		"iso_checksum": "2ca1fa65d95da39947d1dfd998f98bbe",
-		"iso_checksum_type": "md5",
-		"iso_url": "http://storage.core-os.net/coreos/amd64-usr/alpha/coreos_production_iso_image.iso",
+		"iso_checksum": "6b459ae1aad9a6f46f5433fdada39682427153d7",
+		"iso_checksum_type": "sha1",
+		"iso_url": "http://storage.core-os.net/coreos/amd64-usr/324.1.0/coreos_production_iso_image.iso",
 		"ssh_username": "core",
-		"ssh_password": "core",
+		"ssh_key_path": "/Users/camilo/.ssh/id_rsa",
 		"ssh_port": 22,
-		"ssh_wait_timeout": "30s",
-		"shutdown_command": "shutdown -P now",
+		"ssh_wait_timeout": "15s",
+		"shutdown_command": "sudo shutdown -P now",
 		"vmx_data": {
 			"memsize": "1024",
 			"numvcpus": "2",
@@ -35,6 +35,7 @@
     "provisioners": [
     	{
     		"type": "shell",
+    		"execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo {{ .Path }}",
     		"scripts": [
     			"scripts/install.sh"
     		]
