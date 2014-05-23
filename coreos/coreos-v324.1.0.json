@@ -4,7 +4,7 @@
 		"vm_name": "dobby-coreos-alpha",
 		"type": "vmware-iso",
 		"guest_os_type": "other3xlinux-64",
-		"output_directory": "vmware",
+		"output_directory": "../../vmware/coreos-dev-324.1.0.box",
 		"boot_command": [
 			"<wait>",
 			"/coreos/vmlinuz",
@@ -23,7 +23,7 @@
 		"ssh_username": "core",
 		"ssh_key_path": "/Users/camilo/.ssh/id_rsa",
 		"ssh_port": 22,
-		"ssh_wait_timeout": "15s",
+		"ssh_wait_timeout": "20s",
 		"shutdown_command": "sudo shutdown -P now",
 		"vmx_data": {
 			"memsize": "512",
