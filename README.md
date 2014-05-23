@@ -1,16 +1,44 @@
-# Dobby's node templates
-The following packer templates create optimized node images intended to be lunched with Dobby's formations.
+# Dobby Boxes
+This projects contains Packer templates that generate Dobby boxes for different providers, initially only VMWare is supported. There is also a Go tool to aid the process.
 
-## Dependencies
-* github-release: `go get github.com/aktau/github-release`
 
-## Building a box
-First make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then, run the following packer command and sit tight:
+## Packaging and releasing boxes
+Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then you can explore the options to build, package and release Dobby boxes.
 
 ```
-$ packer build template.json
+USAGE:
+   make <target> [-provider=vmware] Available providers are: vmware
+
+TARGETS:
+	list	List available Packer templates
+	build	Builds a box for a given provider. By default, it builds all boxes for VMware
+	release	Tags version, generates changelog, creates release and uploads release artifacts to Github
+	all	    Builds all the boxes for all the providers
+	help	this :)
 ```
 
+### Examples
+```
+$ go build -o make
+$ ./make list
+
+Available templates:
+✱ coreos/coreos-alpha.json
+✱ coreos/coreos-beta.json
+✱ coreos/coreos-v324.1.0.json
+
+$ ./make build coreos/coreos-v324.1.0.json -provider=vmware
+$ ./make release coreos v0.3.0 -provider=vmware
+
+```
+
+## Releasing new versions
+Each developer has to have a GITHUB_TOKEN configured as environment variable in order for Dobby's make
+tool to upload box's artifacts to Github.
+
+```
+echo "GITHUB_TOKEN=<THE TOKEN>" >> ~/.{zshrc,bashrc}
+```
 
 
 # License

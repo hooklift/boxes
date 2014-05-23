@@ -11,8 +11,13 @@ import (
 )
 
 // Dobby's boxes builder and release manager
+// Why Go for this?
 // Makefiles are much more concise but less readable
 // and completely extrange for most people.
+//
+// On the other hand, shell scripts are nice and familiar
+// but they are not easy to make portable; and in making them so,
+// become bloated, hacky and non-deterministic.
 
 var token string = os.Getenv("GITHUB_TOKEN")
 var provider string
