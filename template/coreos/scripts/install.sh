@@ -4,23 +4,7 @@
 # CoreOS being young and alpha releases not being pushed up 
 # as often as we would like to
 
-CLOUDINIT=$(cat  <<EOF
-#cloud-config
-coreos:
-  update:
-    reboot-strategy: best-effort
-  etcd: 
-    discovery: https://discovery.etcd.io/fcd5226a0a8ac99a12eae21ca7bb1e51
-  units:
-    - name: docker-tcp.socket
-      command: start
-    - name: docker.service
-      command: start
-
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2BLp1n2SBoTGRvUxDx9xK1s6ZDawFrmgVmpK04rRna3xzVfpx+JmvXwmKjxehOzZZdYdVS3LUad3QvHlBIWQZg0jclR0lQxvUMOuh7PVNo0s4k4a5KjU4dC65AJeKLUJxxfkGZkHcD73Pz1cIEadYOAPrkm0gpyXjQ/q1ztT3vDEQX247UOUDSO22E/bgdML6gqgt7WXeigak2qi5XhkgMsPz9AaD8DI0wV5/VylAQKkLv0Km+KAixxbNXGrgIHW+6rkXo6uILA1tE5Gpm1ndQoLgqdkzShKbTsOOkJlFzKtnvHVXRI/lsdrsGNoMo1ca5squsYRsmdxyxjcOT2Db
-EOF
-)
+CLOUDINIT=$(curl https://raw.githubusercontent.com/c4milo/dobby-boxes/master/coreos/oem/config.yml)
 
 DEVICE="/dev/sda"
 

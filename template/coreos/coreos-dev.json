@@ -11,7 +11,7 @@
 			" initrd=/coreos/cpio.gz",
 			" coreos.autologin",
 			" rootfstype=btrfs",
-			" cloud-config-url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/config.yml <enter>"
+			" cloud-config-url=https://raw.githubusercontent.com/c4milo/dobby-boxes/master/coreos/oem/config.yml <enter>"
 		],
 		"boot_wait": "2s",
 		"disk_size": 20960,
@@ -26,8 +26,8 @@
 		"ssh_wait_timeout": "15s",
 		"shutdown_command": "sudo shutdown -P now",
 		"vmx_data": {
-			"memsize": "1024",
-			"numvcpus": "2",
+			"memsize": "512",
+			"numvcpus": "1",
 			"cpuid.coresPerSocket": "1"
 		}
     }],
