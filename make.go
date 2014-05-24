@@ -57,7 +57,7 @@ func release(path, version string) {
 	template = strings.TrimSuffix(template, ".json")
 
 	runCommand(exec.Command("git", "add", "--all"))
-	runCommand(exec.Command("git", "commit", "-m", "[make] Preparing to release version"+version))
+	runCommand(exec.Command("git", "commit", "-m", "[make] Preparing to release version "+version))
 	runCommand(exec.Command("git", "push", "origin", "master"))
 
 	// Creates Release using github API
