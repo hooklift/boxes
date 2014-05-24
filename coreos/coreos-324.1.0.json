@@ -8,7 +8,7 @@
 		"vm_name": "dobby-coreos-alpha",
 		"type": "vmware-iso",
 		"guest_os_type": "other3xlinux-64",
-		"output_directory": "../output/vmware/coreos-dev-{{user `os_version`}}",
+		"output_directory": "../output/vmware/coreos-{{user `os_version`}}",
 		"boot_command": [
 			"<wait>",
 			"/coreos/vmlinuz",

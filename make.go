@@ -32,7 +32,7 @@ var provider string
 func init() {
 	//Disables timestamp
 	log.SetFlags(0)
-	flag.StringVar(&provider, "provider", "vmware-iso", "Builds a box for this provider")
+	flag.StringVar(&provider, "provider", "", "Builds a box for this provider")
 }
 
 // Helper function to list available packer templates
@@ -43,38 +43,40 @@ func templates() ([]string, error) {
 // Tags version, generates changelog, creates release and uploads
 // release artifacts to Github
 func release(path, version string) {
+	fmt.Println("Releasing...")
+	cwd, _ := os.Getwd()
 	if token == "" {
 		log.Fatal("Github token not found. Please contact @c4milo to get one")
 	}
+	fmt.Println("-> " + cwd)
 
 	// TODO(c4milo). Validate that it is a valid semver version
 
-	osName, osVersion, _ := disect(path)
+	osName, osVersion, template := disect(path)
 	version = version + "-" + osVersion
+	template = strings.TrimSuffix(template, ".json")
 
-	// git add --all .
-	// git commit -m "Preparing to release version" + version
-	// git push origin master
+	runCommand(exec.Command("git", "add", "--all"))
+	runCommand(exec.Command("git", "commit", "-m", "[make] Preparing to release version"+version))
+	runCommand(exec.Command("git", "push", "origin", "master"))
+
 	// Creates Release using github API
 
-	outputDir := "./output"
+	outputDir := "output"
 
-	files, _ := ioutil.ReadDir(outputDir)
-	for _, f := range files {
-		cwd, _ := os.Getwd()
+	providers, _ := ioutil.ReadDir(outputDir)
 
-		fname := f.Name()
-		os.Chdir(outputDir + "/" + fname)
-		// Compress box directory
-		// As a temporary approach we run the tar command
-		// FIXME(c4milo) Write targz function using Go stdlib instead
-		rel := osName + "-" + version + "-" + fname
-		runCommand(exec.Command("tar", "cvzf", rel+".box", rel))
+	for _, p := range providers {
+		pname := p.Name()
+		os.Chdir(outputDir + "/" + pname)
+
+		rel := osName + "-" + version + "-" + pname
+		runCommand(exec.Command("tar", "cvzf", rel+".box", template))
+
+		// Upload Box
 		os.Chdir(cwd)
-
-		// Uploads assets
 	}
-	//
+
 	// Edit release to add Changelog
 	// git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse | grep "#changelog"
 
@@ -85,6 +87,7 @@ func release(path, version string) {
 func disect(path string) (string, string, string) {
 	osdir, template := filepath.Split(path)
 
+	osdir = strings.TrimSuffix(osdir, "/")
 	fileParts := strings.Split(template, "-")
 	if len(fileParts) != 2 {
 		log.Fatalf("Unable to determine OS version from: %s", template)
@@ -112,18 +115,25 @@ func build(path string) {
 	//to download the specific version of the OS, if needed.
 	os.Setenv("OS_VERSION", version)
 
-	cmd := exec.Command("packer", "build", "-only="+provider, template)
+	only := ""
+	if provider != "" {
+		only = "-only=" + provider + " "
+	}
+
+	cmd := exec.Command("packer", "build", only+template)
 	runCommand(cmd)
 }
 
 // Runs a command piping output to stdout
 func runCommand(cmd *exec.Cmd) {
+	log.Printf("Running %s %v...\n", cmd.Path, cmd.Args[1:])
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	rd := bufio.NewReader(stdout)
+
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
 	}
@@ -227,12 +237,13 @@ func main() {
 	case "all":
 		all()
 	case "release":
-		if argsn < 5 {
+		if argsn < 4 {
 			usage()
 			os.Exit(0)
 		}
 		tmpl := args[2]
 		version := args[3]
+		build(tmpl)
 		release(tmpl, version)
 	case "help":
 		usage()
