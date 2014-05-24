@@ -6,14 +6,17 @@ This project contains Packer templates that generate Dobby boxes for different p
 Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then you can explore the options to build, package and release Dobby boxes.
 
 ```
+NAME:
+   Make - Builds Dobby boxes and manages releases
+
 USAGE:
-   make <target> [-provider=vmware-iso] 
+   make <target> [-provider=vmware] Available providers are the same seen in Packer.
 
 TARGETS:
 	list	List available Packer templates
-	build	Builds a box for a given provider. By default, it builds all boxes for VMware
+	build	Builds a box for a given provider. By default, it builds all boxes for vmware
 	release	Tags version, generates changelog, creates release and uploads release artifacts to Github
-	all	    Builds all the boxes for all the providers
+	all	Builds all the boxes for all the providers
 	help	this :)
 ```
 
@@ -21,6 +24,7 @@ TARGETS:
 ```
 $ go build -o make
 $ ./make list
+
 Available templates:
 ✱ coreos/coreos-324.1.0.json
 ✱ coreos/coreos-alpha.json

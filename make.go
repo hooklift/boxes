@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -12,6 +14,7 @@ import (
 )
 
 // Dobby's boxes builder and release manager
+//
 // Why Go for this?
 // Makefiles are much more concise but less readable
 // and completely extrange for most people.
@@ -19,6 +22,9 @@ import (
 // On the other hand, shell scripts are nice and familiar
 // but they are not easy to make portable; and in making them so,
 // become bloated, hacky and non-deterministic.
+//
+// The above said, this Go version isn't perfect either but hopefully
+// it will improve as we move along without too much magic and clear intent.
 
 var token string = os.Getenv("GITHUB_TOKEN")
 var provider string
@@ -36,27 +42,48 @@ func templates() ([]string, error) {
 
 // Tags version, generates changelog, creates release and uploads
 // release artifacts to Github
-func release(box, version string) {
+func release(path, version string) {
 	if token == "" {
 		log.Fatal("Github token not found. Please contact @c4milo to get one")
 	}
-	// Creates tag
-	// Generates Changelog // https://coderwall.com/p/5cv5lg
-	// Creates Release
-	// Uploads assets
+
+	// TODO(c4milo). Validate that it is a valid semver version
+
+	osName, osVersion, _ := disect(path)
+	version = version + "-" + osVersion
+
+	// git add --all .
+	// git commit -m "Preparing to release version" + version
+	// git push origin master
+	// Creates Release using github API
+
+	outputDir := "./output"
+
+	files, _ := ioutil.ReadDir(outputDir)
+	for _, f := range files {
+		cwd, _ := os.Getwd()
+
+		fname := f.Name()
+		os.Chdir(outputDir + "/" + fname)
+		// Compress box directory
+		// As a temporary approach we run the tar command
+		// FIXME(c4milo) Write targz function using Go stdlib instead
+		rel := osName + "-" + version + "-" + fname
+		runCommand(exec.Command("tar", "cvzf", rel+".box", rel))
+		os.Chdir(cwd)
+
+		// Uploads assets
+	}
+	//
+	// Edit release to add Changelog
+	// git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse | grep "#changelog"
+
 }
 
-// Runs packer build on given os template
-func build(box string) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// box variable comes in this format: coreos/coreos-324.1.0.json
-	osdir, template := filepath.Split(box)
-	os.Chdir(osdir)
-	defer os.Chdir(cwd)
+// Disects template path
+// path variable comes in this format: coreos/coreos-324.1.0.json
+func disect(path string) (string, string, string) {
+	osdir, template := filepath.Split(path)
 
 	fileParts := strings.Split(template, "-")
 	if len(fileParts) != 2 {
@@ -67,11 +94,30 @@ func build(box string) {
 	basename := fileParts[1]
 	version := strings.TrimSuffix(basename, filepath.Ext(basename))
 
+	return osdir, version, template
+}
+
+// Runs packer build on given os template
+func build(path string) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	osdir, version, template := disect(path)
+	os.Chdir(osdir)
+	defer os.Chdir(cwd)
+
 	//This variable is used by OEM scripts in order
 	//to download the specific version of the OS, if needed.
 	os.Setenv("OS_VERSION", version)
 
 	cmd := exec.Command("packer", "build", "-only="+provider, template)
+	runCommand(cmd)
+}
+
+// Runs a command piping output to stdout
+func runCommand(cmd *exec.Cmd) {
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -85,7 +131,9 @@ func build(box string) {
 	for {
 		str, err := rd.ReadString('\n')
 		if err != nil {
-			log.Fatal(err)
+			if err != io.EOF {
+				log.Fatal(err)
+			}
 			break
 		}
 		fmt.Print(str)
@@ -134,6 +182,24 @@ TARGETS:
 	release	Tags version, generates changelog, creates release and uploads release artifacts to Github
 	all	Builds all the boxes for all the providers
 	help	this :)
+
+EXAMPLES:
+	# Makes sure you compile first, unless you want to use 'go run make.go'
+	$ go build -o make
+	$ ./make list
+
+	Available templates:
+	✱ coreos/coreos-324.1.0.json
+	✱ coreos/coreos-alpha.json
+	✱ coreos/coreos-beta.json
+
+	# While working on templates you will find yourself running this often
+	$ ./make build coreos/coreos-324.1.0.json -provider=vmware-iso
+
+	# Creates a Github release, tagging it as v0.3.0-324.1.0
+	# It also adds a changelog to the release description
+	# and uploads artifacts for ALL supported providers
+	$ ./make release coreos/coreos-324.1.0.json v0.3.0
 `)
 }
 
@@ -141,7 +207,9 @@ func main() {
 	flag.Parse()
 
 	args := os.Args
-	if len(args) == 1 {
+	argsn := len(args)
+
+	if argsn == 1 {
 		usage()
 		os.Exit(0)
 	}
@@ -150,7 +218,7 @@ func main() {
 	case "list":
 		list()
 	case "build":
-		if len(args) >= 3 {
+		if argsn >= 3 {
 			tmpl := args[2]
 			build(tmpl)
 		} else {
@@ -159,16 +227,16 @@ func main() {
 	case "all":
 		all()
 	case "release":
+		if argsn < 5 {
+			usage()
+			os.Exit(0)
+		}
+		tmpl := args[2]
+		version := args[3]
+		release(tmpl, version)
 	case "help":
 		usage()
 	default:
 		usage()
 	}
-
-	// go build -o make
-	// make list
-	// make build coreos/coreos-324.1.0.json -provider=vmware-iso
-	// make all
-	// make release coreos v0.3.0 -provider=vmware-iso
-	// make release coreos v0.3.0 -provider=kvm
 }
