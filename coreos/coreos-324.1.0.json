@@ -1,10 +1,14 @@
 {
+	"variables": {
+		"os_version": "{{env `OS_VERSION`}}"
+	},
+
 	"builders": [
 	{
 		"vm_name": "dobby-coreos-alpha",
 		"type": "vmware-iso",
 		"guest_os_type": "other3xlinux-64",
-		"output_directory": "../../vmware/coreos-dev-324.1.0.box",
+		"output_directory": "../vmware/coreos-dev-{{user `os_version`}}.box",
 		"boot_command": [
 			"<wait>",
 			"/coreos/vmlinuz",
@@ -19,7 +23,7 @@
 		"http_directory": "oem",
 		"iso_checksum": "6b459ae1aad9a6f46f5433fdada39682427153d7",
 		"iso_checksum_type": "sha1",
-		"iso_url": "http://storage.core-os.net/coreos/amd64-usr/324.1.0/coreos_production_iso_image.iso",
+		"iso_url": "http://storage.core-os.net/coreos/amd64-usr/{{user `os_version`}}/coreos_production_iso_image.iso",
 		"ssh_username": "core",
 		"ssh_key_path": "/Users/camilo/.ssh/id_rsa",
 		"ssh_port": 22,
@@ -35,9 +39,13 @@
     "provisioners": [
     	{
     		"type": "shell",
-    		"execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo {{ .Path }}",
+    		"execute_command": "chmod +x {{.Path}}; {{.Vars}} sudo {{.Path}}",
     		"scripts": [
+    			"scripts/sudo.sh",
     			"scripts/install.sh"
+    		],
+    		"environment_vars": [
+      			"OS_VERSION={{user `os_version`}}"
     		]
     	}
     ]

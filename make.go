@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // Dobby's boxes builder and release manager
@@ -25,7 +26,7 @@ var provider string
 func init() {
 	//Disables timestamp
 	log.SetFlags(0)
-	flag.StringVar(&provider, "provider", "vmware", "Builds a box for this provider")
+	flag.StringVar(&provider, "provider", "vmware-iso", "Builds a box for this provider")
 }
 
 // Helper function to list available packer templates
@@ -52,10 +53,23 @@ func build(box string) {
 		log.Fatal(err)
 	}
 
-	//box variable comes in this format: coreos/coreos-v324.1.0.json
+	// box variable comes in this format: coreos/coreos-324.1.0.json
 	osdir, template := filepath.Split(box)
 	os.Chdir(osdir)
 	defer os.Chdir(cwd)
+
+	fileParts := strings.Split(template, "-")
+	if len(fileParts) != 2 {
+		log.Fatalf("Unable to determine OS version from: %s", template)
+	}
+
+	// normalizes Packer parameters
+	basename := fileParts[1]
+	version := strings.TrimSuffix(basename, filepath.Ext(basename))
+
+	//This variable is used by OEM scripts in order
+	//to download the specific version of the OS, if needed.
+	os.Setenv("OS_VERSION", version)
 
 	cmd := exec.Command("packer", "build", "-only="+provider, template)
 	stdout, err := cmd.StdoutPipe()
@@ -65,16 +79,16 @@ func build(box string) {
 
 	rd := bufio.NewReader(stdout)
 	if err := cmd.Start(); err != nil {
-		log.Fatal("Buffer Error:", err)
+		log.Fatal(err)
 	}
 
 	for {
 		str, err := rd.ReadString('\n')
 		if err != nil {
-			log.Fatal("Read Error:", err)
-			return
+			log.Fatal(err)
+			break
 		}
-		fmt.Println(str)
+		fmt.Print(str)
 	}
 }
 
@@ -112,7 +126,7 @@ NAME:
    Make - Builds Dobby boxes and manages releases
 
 USAGE:
-   make <target> [-provider=vmware] Available providers are: vmware, vsphere, aws
+   make <target> [-provider=vmware] Available providers are the same seen in Packer.
 
 TARGETS:
 	list	List available Packer templates
@@ -147,13 +161,14 @@ func main() {
 	case "release":
 	case "help":
 		usage()
+	default:
+		usage()
 	}
 
 	// go build -o make
 	// make list
-	// make build coreos/coreos-v324.1.0.json -provider=vmware
+	// make build coreos/coreos-324.1.0.json -provider=vmware-iso
 	// make all
-	// make release coreos v0.3.0 -provider=vmware
-	// make release coreos v0.3.0 -provider=vsphere
+	// make release coreos v0.3.0 -provider=vmware-iso
 	// make release coreos v0.3.0 -provider=kvm
 }

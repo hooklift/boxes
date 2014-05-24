@@ -8,10 +8,9 @@ CLOUDINIT=$(curl https://raw.githubusercontent.com/c4milo/dobby-boxes/master/cor
 
 DEVICE="/dev/sda"
 
-
 echo "Installing CoreOS..."
 
-VERSION_ID="324.1.0"
+VERSION_ID=$OS_VERSION
 set -e -o pipefail
 
 # Everything we do should be user-access only!

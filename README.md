@@ -7,7 +7,7 @@ Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.htm
 
 ```
 USAGE:
-   make <target> [-provider=vmware] Available providers are: vmware
+   make <target> [-provider=vmware-iso] 
 
 TARGETS:
 	list	List available Packer templates
@@ -21,14 +21,13 @@ TARGETS:
 ```
 $ go build -o make
 $ ./make list
-
 Available templates:
+✱ coreos/coreos-324.1.0.json
 ✱ coreos/coreos-alpha.json
 ✱ coreos/coreos-beta.json
-✱ coreos/coreos-v324.1.0.json
 
-$ ./make build coreos/coreos-v324.1.0.json -provider=vmware
-$ ./make release coreos v0.3.0 -provider=vmware
+$ ./make build coreos/coreos-324.1.0.json -provider=vmware-iso
+$ ./make release coreos v0.3.0 -provider=vmware-iso
 
 ```
 
