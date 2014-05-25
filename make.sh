@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-set -e -o pipefail
+set -x -e -o pipefail
 
 list() {
     echo "Available templates: "
@@ -41,29 +41,51 @@ build() {
     local tmpl=${parts[1]}
 
     local version=`expr "${tmpl}" : '.*-\(.*\).json'`
+
+    #Packer templates use this variable to download the correct ISO for the given version
     export OS_VERSION=${version}
 
     rm -rf output/${provider}*/${os}*
 
+    local cwd=$(pwd)
     cd $os && packer build ${onlyOpt} ${tmpl}
+    cd ${cwd}
+
+    #Packaging one box
+    echo "Packaging box..."
+    if [[ -z ${provider} ]]; then
+        local providers=$(ls output)
+    else
+        local providers=${provider}
+    fi
+
+    local box="$os-$version"
+    for p in ${providers}
+    do
+        cd output/${p}
+        tar cvzf "${box}-${p}.box" "${box}"
+        rm -rf "${box}"
+        cd ${cwd}
+    done
+    echo "Success!"
 }
 
 usage() {
     echo "
     NAME:
-       Make - Builds Dobby boxes and manages releases
+       Make.sh - Builds Dobby boxes
 
     USAGE:
-       ./make <target> [-provider=vmware] Available providers are the same seen in Packer.
+       ./make.sh <target> <template> <provider> Available providers are the same seen for builders in Packer.
 
     TARGETS:
         list    List available Packer templates
-        build   Builds a box for a given provider. By default, it builds all boxes for vmware
+        build   Builds a box for a given provider. By default, it builds all boxes for all providers
         release Compresses boxes and uploads them to Github
         all Builds all the boxes for all the providers
 
     EXAMPLES:
-        $ ./make list
+        $ ./make.sh list
 
         Available templates:
         ✱ coreos/coreos-324.1.0.json
@@ -71,7 +93,7 @@ usage() {
         ✱ coreos/coreos-beta.json
 
         # While working on templates you will find yourself running this often
-        $ ./make build coreos/coreos-324.1.0.json vmware-iso
+        $ ./make.sh build coreos/coreos-324.1.0.json vmware-iso
 "
     exit 0
 }
@@ -90,9 +112,6 @@ case $1 in
         fi
 
         build ${2} ${3}
-        ;;
-    release)
-        release ${2} ${3}
         ;;
     *)
         usage
