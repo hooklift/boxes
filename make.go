@@ -146,7 +146,7 @@ func runCommand(cmd *exec.Cmd) {
 			}
 			break
 		}
-		fmt.Print(str)
+		fmt.Print(cmd.Args[0] + " ==> " + str)
 	}
 }
 
