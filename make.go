@@ -11,6 +11,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"code.google.com/p/goauth2/oauth"
+	"github.com/google/go-github/github"
 )
 
 // Dobby's boxes builder and release manager
@@ -45,10 +48,6 @@ func templates() ([]string, error) {
 func release(path, version string) {
 	fmt.Println("Releasing...")
 	cwd, _ := os.Getwd()
-	if token == "" {
-		log.Fatal("Github token not found. Please contact @c4milo to get one")
-	}
-	fmt.Println("-> " + cwd)
 
 	// TODO(c4milo). Validate that it is a valid semver version
 
@@ -61,6 +60,7 @@ func release(path, version string) {
 	runCommand(exec.Command("git", "push", "origin", "master"))
 
 	// Creates Release using github API
+	ghRelease(version)
 
 	outputDir := "output"
 
@@ -80,6 +80,43 @@ func release(path, version string) {
 	// Edit release to add Changelog
 	// git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse | grep "#changelog"
 
+}
+
+func ghRelease(version string) {
+	if token == "" {
+		log.Fatal("Github token not found. Please contact @c4milo to get one")
+	}
+
+	t := &oauth.Transport{
+		Token: &oauth.Token{AccessToken: token},
+	}
+
+	client := github.NewClient(t.Client())
+
+	// This is annoying. go-github was written by a googler and
+	// even though its API is awful to use.
+	name := new(string)
+	body := new(string)
+	draft := new(bool)
+	prerel := new(bool)
+
+	*name = "CoreOS"
+	*body = "Description of the release"
+	*draft = true
+	*prerel = false
+
+	release := &github.RepositoryRelease{
+		TagName:    &version,
+		Name:       name,
+		Body:       body,
+		Draft:      draft,
+		Prerelease: prerel,
+	}
+
+	_, _, err := client.Repositories.CreateRelease("c4milo", "dobby-boxes", release)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 // Disects template path
@@ -127,6 +164,7 @@ func build(path string) {
 // Runs a command piping output to stdout
 func runCommand(cmd *exec.Cmd) {
 	log.Printf("Running %s %v...\n", cmd.Path, cmd.Args[1:])
+
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)
