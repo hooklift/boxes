@@ -11,9 +11,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-
-	"code.google.com/p/goauth2/oauth"
-	"github.com/google/go-github/github"
 )
 
 // Dobby's boxes builder and release manager
@@ -79,44 +76,33 @@ func release(path, version string) {
 
 	// Edit release to add Changelog
 	// git log v2.1.0...v2.1.1 --pretty=format:'<li> <a href="http://github.com/jerel/<project>/commit/%H">view commit &bull;</a> %s</li> ' --reverse | grep "#changelog"
-
 }
 
-func ghRelease(version string) {
+func ghReleaseUpload(releaseId string) {
+	// curl -H "Authorization: token TOKEN" \
+	//     -H "Accept: application/vnd.github.manifold-preview" \
+	//     -H "Content-Type: application/zip" \
+	//     --data-binary @build/mac/package.zip \
+	//     "https://uploads.github.com/repos/hubot/singularity/releases/123/assets?name=1.0.0-mac.zip"
+}
+
+func ghRelease(version, name, desc string) {
 	if token == "" {
 		log.Fatal("Github token not found. Please contact @c4milo to get one")
 	}
 
-	t := &oauth.Transport{
-		Token: &oauth.Token{AccessToken: token},
-	}
+	url := "https://api.github.com/repos/c4milo/dobby-boxes/releases"
 
-	client := github.NewClient(t.Client())
-
-	// This is annoying. go-github was written by a googler and
-	// even though its API is awful to use.
-	name := new(string)
-	body := new(string)
-	draft := new(bool)
-	prerel := new(bool)
-
-	*name = "CoreOS"
-	*body = "Description of the release"
-	*draft = true
-	*prerel = false
-
-	release := &github.RepositoryRelease{
-		TagName:    &version,
-		Name:       name,
-		Body:       body,
-		Draft:      draft,
-		Prerelease: prerel,
-	}
-
-	_, _, err := client.Repositories.CreateRelease("c4milo", "dobby-boxes", release)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	release := fmt.Sprintf(`
+		{
+		  "tag_name": "%s",
+		  "target_commitish": "master",
+		  "name": "%s",
+		  "body": "%s",
+		  "draft": %t,
+		  "prerelease": %t
+		}
+	`, version, name, desc, true, false)
 }
 
 // Disects template path
