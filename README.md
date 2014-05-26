@@ -2,7 +2,7 @@
 This project contains Packer templates that generate Dobby boxes for different providers. Initially only VMWare is supported. There is also a Go tool to aid the process.
 
 
-## Packaging and releasing boxes
+## Building and packaging
 Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then you can explore the options to build, package and release Dobby boxes.
 
 ```
