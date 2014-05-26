@@ -35,7 +35,7 @@
 			"cpuid.coresPerSocket": "1"
 		}
     }],
-    
+
     "provisioners": [
     	{
     		"type": "shell",
