@@ -81,8 +81,6 @@ usage() {
     TARGETS:
         list    List available Packer templates
         build   Builds a box for a given provider. By default, it builds all boxes for all providers
-        release Compresses boxes and uploads them to Github
-        all Builds all the boxes for all the providers
 
     EXAMPLES:
         $ ./make.sh list
