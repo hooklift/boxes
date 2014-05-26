@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-set -x -e -o pipefail
+set -e -o pipefail
 
 list() {
     echo "Available templates: "
