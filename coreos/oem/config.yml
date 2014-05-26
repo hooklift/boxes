@@ -1,13 +1,17 @@
 #cloud-config
 coreos:
   update:
-    reboot-strategy: best-effort
-  etcd: 
+    reboot-strategy: etcd-lock
+  etcd:
     discovery: https://discovery.etcd.io/fcd5226a0a8ac99a12eae21ca7bb1e51
+    addr: $public_ipv4:4001
+    peer-addr: $public_ipv4:7001
   units:
-    - name: docker-tcp.socket
+    - name: etcd.service
       command: start
     - name: docker.service
+      command: start
+    - name: fleet.service
       command: start
 
 ssh_authorized_keys:
