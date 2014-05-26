@@ -45,7 +45,8 @@ build() {
     #Packer templates use this variable to download the correct ISO for the given version
     export OS_VERSION=${version}
 
-    rm -rf output/${provider}*/${os}*
+    local box="$os-$version"
+    rm -rf output/${provider}*/${box}
 
     local cwd=$(pwd)
     cd $os && packer build ${onlyOpt} ${tmpl}
@@ -59,7 +60,6 @@ build() {
         local providers=${provider}
     fi
 
-    local box="$os-$version"
     for p in ${providers}
     do
         cd output/${p}
