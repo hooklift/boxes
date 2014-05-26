@@ -7,41 +7,30 @@ Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.htm
 
 ```
 NAME:
-   Make - Builds Dobby boxes and manages releases
+   Make.sh - Builds Dobby boxes
 
 USAGE:
-   make <target> [-provider=vmware] Available providers are the same seen in Packer.
+   ./make.sh <target> <template> <provider> Available providers are the same seen for builders in Packer.
 
 TARGETS:
-	list	List available Packer templates
-	build	Builds a box for a given provider. By default, it builds all boxes for vmware
-	release	Tags version, generates changelog, creates release and uploads release artifacts to Github
-	all	Builds all the boxes for all the providers
-	help	this :)
+    list    List available Packer templates
+    build   Builds a box for a given provider. By default, it builds all boxes for all providers
+
+EXAMPLES:
+    $ ./make.sh list
+
+    Available templates:
+    ✱ coreos/coreos-324.1.0.json
+    ✱ coreos/coreos-alpha.json
+    ✱ coreos/coreos-beta.json
+
+    # While working on templates you will find yourself running this often
+    $ ./make.sh build coreos/coreos-324.1.0.json vmware-iso
 ```
 
-### Examples
-```
-$ go build -o make
-$ ./make list
-
-Available templates:
-✱ coreos/coreos-324.1.0.json
-✱ coreos/coreos-alpha.json
-✱ coreos/coreos-beta.json
-
-$ ./make build coreos/coreos-324.1.0.json -provider=vmware-iso
-$ ./make release coreos v0.3.0 -provider=vmware-iso
-
-```
 
 ## Releasing new versions
-Each developer has to have a GITHUB_TOKEN configured as environment variable in order for Dobby's make
-tool to upload box's artifacts to Github.
-
-```
-echo "GITHUB_TOKEN=<THE TOKEN>" >> ~/.{zshrc,bashrc}
-```
+Once you run `./make.sh build` boxes will be generated at `./output`. Create a Github Release and upload the boxes following the same versioning convention.
 
 
 # License
