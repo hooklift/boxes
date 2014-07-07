@@ -5,23 +5,24 @@
 
     "builders": [
     {
-        "vm_name": "dobby-coreos-alpha",
+        "vm_name": "dobby-coreos-{{user `os_version`}}",
         "type": "vmware-iso",
         "guest_os_type": "other3xlinux-64",
         "output_directory": "../output/vmware/coreos-{{user `os_version`}}",
+        "http_directory": "oem",
         "boot_command": [
             "<wait>",
             "/coreos/vmlinuz",
             " initrd=/coreos/cpio.gz",
             " coreos.autologin",
             " rootfstype=btrfs",
-            " cloud-config-url=https://raw.githubusercontent.com/c4milo/dobby-boxes/master/coreos/oem/config.yml <enter>"
+            " cloud-config-url=https://raw.githubusercontent.com/c4milo/dobby-boxes/master/oem/config.yml <enter>"
         ],
+        "tools_upload_flavor": "linux",
         "boot_wait": "2s",
         "disk_size": 20960,
         "guest_os_type": "linux",
-        "http_directory": "oem",
-        "iso_checksum": "6b459ae1aad9a6f46f5433fdada39682427153d7",
+        "iso_checksum": "82e1db08e761eacf300d2e3bf8163dd684623b5c",
         "iso_checksum_type": "sha1",
         "iso_url": "http://storage.core-os.net/coreos/amd64-usr/{{user `os_version`}}/coreos_production_iso_image.iso",
         "ssh_username": "core",
@@ -30,8 +31,8 @@
         "ssh_wait_timeout": "20s",
         "shutdown_command": "sudo shutdown -P now",
         "vmx_data": {
-            "memsize": "512",
-            "numvcpus": "1",
+            "memsize": "1024",
+            "numvcpus": "2",
             "cpuid.coresPerSocket": "1"
         }
     }],

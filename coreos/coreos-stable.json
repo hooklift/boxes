@@ -22,7 +22,7 @@
         "boot_wait": "2s",
         "disk_size": 20960,
         "guest_os_type": "linux",
-        "iso_checksum": "0f59da3e026ee00c43531b30e0934096abcedf00",
+        "iso_checksum": "f412c953fbc5299da81221c61db835a5da9f863e",
         "iso_checksum_type": "sha1",
         "iso_url": "http://storage.core-os.net/coreos/amd64-usr/{{user `os_version`}}/coreos_production_iso_image.iso",
         "ssh_username": "core",
