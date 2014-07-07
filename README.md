@@ -1,4 +1,4 @@
-# Dobby Boxes (DEPRECATED)
+# Dobby Boxes
 This project contains Packer templates that generate Dobby boxes for different providers. Initially only VMWare is supported. There is also a Go tool to aid the process.
 
 
