@@ -1,15 +1,32 @@
 #cloud-config
-coreos:
-  update:
-    reboot-strategy: off
-  units:
-    - name: docker.service
-      command: start
-  oem:
-    id: dobby
-    name: Dobby
-    home-url: http://www.cloudescape.com
-    bug-report-url: https://github.com/dobby/dobby-boxes
 
+coreos:
+  manage_etc_hosts: localhost
+  update:
+    reboot-strategy: reboot
+  units:
+    - name: docker-tcp.socket
+      command: start
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=127.0.0.1:2375
+        Service=docker.service
+        BindIPv6Only=both
+
+        [Install]
+        WantedBy=sockets.target
+    - name: enable-docker-tcp.service
+      command: start
+      content: |
+        [Unit]
+        Description=Enable the Docker Socket for the API
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/systemctl enable docker-tcp.socket
 ssh_authorized_keys:
   - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2BLp1n2SBoTGRvUxDx9xK1s6ZDawFrmgVmpK04rRna3xzVfpx+JmvXwmKjxehOzZZdYdVS3LUad3QvHlBIWQZg0jclR0lQxvUMOuh7PVNo0s4k4a5KjU4dC65AJeKLUJxxfkGZkHcD73Pz1cIEadYOAPrkm0gpyXjQ/q1ztT3vDEQX247UOUDSO22E/bgdML6gqgt7WXeigak2qi5XhkgMsPz9AaD8DI0wV5/VylAQKkLv0Km+KAixxbNXGrgIHW+6rkXo6uILA1tE5Gpm1ndQoLgqdkzShKbTsOOkJlFzKtnvHVXRI/lsdrsGNoMo1ca5squsYRsmdxyxjcOT2Db
+
