@@ -28,7 +28,7 @@
         "ssh_username": "core",
         "ssh_key_path": "/Users/camilo/.ssh/id_rsa",
         "ssh_port": 22,
-        "ssh_wait_timeout": "20s",
+        "ssh_wait_timeout": "30s",
         "shutdown_command": "sudo shutdown -P now",
         "vmx_data": {
             "memsize": "1024",
