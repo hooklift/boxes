@@ -1,5 +1,5 @@
-# Dobby Boxes
-This project contains Packer templates that generate Dobby boxes for different providers. Initially only VMWare is supported. There is also a Go tool to aid the process.
+# Hooklift Boxes
+This project contains Packer templates that generate Hooklift boxes for different providers. Initially only VMWare is supported.
 
 
 ## Building and packaging
@@ -7,7 +7,7 @@ Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.htm
 
 ```
 NAME:
-   Make.sh - Builds Dobby boxes
+   Make.sh - Builds Hooklift boxes
 
 USAGE:
    ./make.sh <target> <template> <provider> Available providers are the same seen for builders in Packer.
@@ -22,10 +22,11 @@ EXAMPLES:
     Available templates:
     ✱ coreos/coreos-324.1.0.json
     ✱ coreos/coreos-alpha.json
+    ✱ coreos/coreos-stable.json
     ✱ coreos/coreos-beta.json
 
     # While working on templates you will find yourself running this often
-    $ ./make.sh build coreos/coreos-324.1.0.json vmware-iso
+    $ ./make.sh build coreos/coreos-stable.json vmware-iso
 ```
 
 
