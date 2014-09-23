@@ -1,7 +1,6 @@
 #cloud-config
 
 coreos:
-  manage_etc_hosts: localhost
   update:
     reboot-strategy: reboot
   units:
@@ -27,6 +26,12 @@ coreos:
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/systemctl enable docker-tcp.socket
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2BLp1n2SBoTGRvUxDx9xK1s6ZDawFrmgVmpK04rRna3xzVfpx+JmvXwmKjxehOzZZdYdVS3LUad3QvHlBIWQZg0jclR0lQxvUMOuh7PVNo0s4k4a5KjU4dC65AJeKLUJxxfkGZkHcD73Pz1cIEadYOAPrkm0gpyXjQ/q1ztT3vDEQX247UOUDSO22E/bgdML6gqgt7WXeigak2qi5XhkgMsPz9AaD8DI0wV5/VylAQKkLv0Km+KAixxbNXGrgIHW+6rkXo6uILA1tE5Gpm1ndQoLgqdkzShKbTsOOkJlFzKtnvHVXRI/lsdrsGNoMo1ca5squsYRsmdxyxjcOT2Db
+
+users:
+  - name: camilo
+    groups:
+      - sudo
+      - docker
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2BLp1n2SBoTGRvUxDx9xK1s6ZDawFrmgVmpK04rRna3xzVfpx+JmvXwmKjxehOzZZdYdVS3LUad3QvHlBIWQZg0jclR0lQxvUMOuh7PVNo0s4k4a5KjU4dC65AJeKLUJxxfkGZkHcD73Pz1cIEadYOAPrkm0gpyXjQ/q1ztT3vDEQX247UOUDSO22E/bgdML6gqgt7WXeigak2qi5XhkgMsPz9AaD8DI0wV5/VylAQKkLv0Km+KAixxbNXGrgIHW+6rkXo6uILA1tE5Gpm1ndQoLgqdkzShKbTsOOkJlFzKtnvHVXRI/lsdrsGNoMo1ca5squsYRsmdxyxjcOT2Db
 
