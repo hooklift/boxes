@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2014 Cloudescape. All rights reserved.
+# Copyright (c) 2014 Hooklift. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -42,7 +42,7 @@ build() {
 
     local version=`expr "${tmpl}" : '.*-\(.*\).json'`
 
-    #Packer templates use this variable to download the correct ISO for the given version
+    # Packer templates use this variable to download the correct ISO for the given version
     export OS_VERSION=${version}
 
     local box="$os-$version"
