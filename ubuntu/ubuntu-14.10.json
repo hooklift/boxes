@@ -1,0 +1,43 @@
+{
+    "variables": {
+        "ssh_private_key": "{{env `HOOKLIFT_SSH_PK`}}",
+        "os_version": "{{env `OS_VERSION`}}"
+    },
+    "builders": [
+        {
+            "type": "vmware-iso",
+            "boot_command": [
+                "<esc><esc><enter><wait>",
+                "/install/vmlinuz noapic preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+                "debian-installer=en_US auto locale=en_US kbd-chooser/method=us ",
+                "hostname={{ .Name }} ",
+                "fb=false debconf/frontend=noninteractive ",
+                "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+                "initrd=/install/initrd.gz -- <enter>"
+            ],
+            "output_directory": "../output/vmware/ubuntu-{{user `os_version`}}",
+            "boot_wait": "5s",
+            "http_directory": "http",
+            "disk_size": 20960,
+            "iso_checksum": "43136dfc098798a7e8e6ca0681b23316a2e3ffb6bf4d5ace1424567c87fa44b3",
+            "iso_checksum_type": "sha256",
+            "iso_url": "http://cdimage.ubuntu.com/ubuntu-server/daily/current/utopic-server-amd64.iso",
+            "shutdown_command": "echo 'hooklift' | sudo -S shutdown -P now",
+            "ssh_wait_timeout": "20m",
+            "ssh_username": "hooklift",
+            "ssh_password": "hooklift",
+            "ssh_key_path": "{{user `ssh_private_key`}}",
+            "tools_upload_flavor": "linux"
+        }
+    ],
+    "provisioners": [
+        {
+            "execute_command": "echo 'hooklift' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+            "script": "scripts/hooklift.sh",
+            "type": "shell",
+            "environment_vars": [
+                "OS_VERSION={{user `os_version`}}"
+            ]
+        }
+    ]
+}
