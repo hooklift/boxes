@@ -5,7 +5,7 @@
 
     "builders": [
     {
-        "vm_name": "dobby-coreos-{{user `os_version`}}",
+        "vm_name": "hooklift-coreos-{{user `os_version`}}",
         "type": "vmware-iso",
         "guest_os_type": "other3xlinux-64",
         "output_directory": "../output/vmware/coreos-{{user `os_version`}}",
