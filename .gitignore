@@ -3,3 +3,5 @@ packer_cache
 output
 make
 cfgdrv.iso
+output-vmware-iso
+tmp
