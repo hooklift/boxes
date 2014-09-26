@@ -3,7 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-set -e -o pipefail
+set -e
+set -o pipefail
+
+# Uncomment for debugging
+# set -x
 
 list() {
     echo "Available templates: "
@@ -43,10 +47,10 @@ build() {
     local version=`expr "${tmpl}" : '.*-\(.*\).json'`
 
     # Packer templates use this variable to download the correct ISO for the given version
-    export OS_VERSION=${version}
+    export OS_VERSION="${version}"
 
     local box="$os-$version"
-    rm -rf output/${provider}*/${box}
+    rm -rf output/"${provider}*/${box}"
 
     local cwd=$(pwd)
     cd $os && packer build ${onlyOpt} ${tmpl}
@@ -54,15 +58,15 @@ build() {
 
     #Packaging one box
     echo "Packaging box..."
-    if [[ -z ${provider} ]]; then
+    if [[ -z "${provider}" ]]; then
         local providers=$(ls output)
     else
-        local providers=${provider}
+        local providers="${provider}"
     fi
 
-    for p in ${providers}
+    for p in "${providers}"
     do
-        cd output/${p}
+        cd output/"${p}"
         tar cvzf "${box}-${p}.box" "${box}"
         rm -rf "${box}"
         cd ${cwd}
