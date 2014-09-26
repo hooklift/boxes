@@ -16,7 +16,7 @@
             " initrd=/coreos/cpio.gz",
             " coreos.autologin",
             " rootfstype=btrfs",
-            " cloud-config-url=https://raw.githubusercontent.com/c4milo/dobby-boxes/master/oem/config.yml <enter>"
+            " cloud-config-url=https://raw.githubusercontent.com/c4milo/hooklift-boxes/master/oem/config.yml <enter>"
         ],
         "tools_upload_flavor": "linux",
         "boot_wait": "2s",
