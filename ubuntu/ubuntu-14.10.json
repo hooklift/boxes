@@ -5,6 +5,7 @@
     },
     "builders": [
         {
+            "vm_name": "hooklift-ubuntu-{{user `os_version`}}",
             "type": "vmware-iso",
             "boot_command": [
                 "<esc><esc><enter><wait>",
