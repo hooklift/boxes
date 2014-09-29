@@ -3,7 +3,7 @@ This project contains Packer templates that generate Hooklift boxes for differen
 
 
 ## Building and packaging
-Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then you can explore the options to build, package and release Dobby boxes.
+Make sure you have [Packer](http://www.packer.io/intro/getting-started/setup.html) installed. Then you can explore the options to build, package and release Hooklift boxes.
 
 ```
 NAME:

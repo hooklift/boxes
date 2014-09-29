@@ -90,7 +90,7 @@ cfgdrv() {
 usage() {
     echo "
     NAME:
-       Make.sh - Builds Dobby boxes
+       Make.sh - Builds Hooklift boxes
 
     USAGE:
        ./make.sh <target> <template> <provider> Available providers are the same seen for builders in Packer.
