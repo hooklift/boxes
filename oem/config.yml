@@ -11,7 +11,7 @@ coreos:
         Description=Docker Socket for the API
 
         [Socket]
-        ListenStream=127.0.0.1:2375
+        ListenStream=0.0.0.0:2375
         Service=docker.service
         BindIPv6Only=both
 
@@ -28,7 +28,7 @@ coreos:
         ExecStart=/usr/bin/systemctl enable docker-tcp.socket
 
 users:
-  - name: camilo
+  - name: hooklift
     groups:
       - sudo
       - docker
