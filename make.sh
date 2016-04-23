@@ -74,6 +74,18 @@ build() {
     echo "Success!"
 }
 
+cfgdrv() {
+    local path=${1}
+    local workspace="./new-drive/openstack/latest"
+    mkdir -p ${workspace}
+    trap "{ rm -rf './new-drive' ; exit 0; }" EXIT
+
+    cp ${path} ${workspace}/user_data
+    if ! mkisofs -R -V config-2 -o cfgdrv.iso new-drive; then
+        echo "$0: Error making ISO image" >&2
+        exit 1
+    fi
+}
 
 usage() {
     echo "
@@ -86,6 +98,7 @@ usage() {
     TARGETS:
         list    List available Packer templates
         build   Builds a box for a given provider. By default, it builds all boxes for all providers
+        cfgdrv  Creates ISO image with user-data configuration for config-drive
 
     EXAMPLES:
         $ ./make.sh list
@@ -97,6 +110,8 @@ usage() {
 
         # While working on templates you will find yourself running this often
         $ ./make.sh build coreos/coreos-324.1.0.json vmware-iso
+
+        $ ./make.sh cfgdrv oem/config.yml
 "
     exit 0
 }
@@ -116,6 +131,13 @@ case $1 in
         fi
 
         build "${2}" "${3}"
+        ;;
+    cfgdrv)
+        if [[ -z "${2}" || ! -f "${2}" ]]; then
+            echo "$0: A path to an existing cloudinit file is required" >&2
+            exit 1
+        fi
+        cfgdrv "${2}"
         ;;
     *)
         usage
